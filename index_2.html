@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oakcraft Packaging IMS</title>
+
+<script>
+/* ============================================================
+ *  ⚙️  CONFIGURATION — sirf yahi 2 lines edit karni hain
+ * ============================================================
+ *  1. Apps Script deploy karne ke baad jo /exec URL milta hai,
+ *     wo neeche API_URL me paste karein.
+ *  2. Agar aapne Script Properties me API_TOKEN set kiya hai,
+ *     wahi value API_TOKEN me daalein. Warna '' rehne dein.
+ * ============================================================ */
+
+window.OAKCRAFT_CONFIG = {
+  API_URL:   "https://script.google.com/macros/s/AKfycbx1bCv_vlbKOFNIWnPdJouiv9C749BawmVZXMCeGPUxJcK153_9hit8ms7K14T3EN68Tw/exec",
+  API_TOKEN: "",
+  COMPANY:   "Oakcraft Packaging",
+  TREND_DAYS: 14
+};
+
+</script>
+
+<meta name="theme-color" content="#6B452A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   OAKCRAFT PACKAGING IMS — Light Wooden Design System
+   ============================================================ */
+
+:root{
+  /* wood palette */
+  --w-50:#FDF9F3;  --w-100:#F8EFE1;  --w-150:#F2E4CF;
+  --w-200:#E9D5B8;  --w-300:#D9BC93;  --w-400:#C49B6A;
+  --w-500:#A9743F;  --w-600:#8B5E3C;  --w-700:#6B452A;  --w-800:#4A3526;
+  --ink:#3A2A1C;    --ink-soft:#7A6350;  --line:#E4D2B6;
+
+  --green:#3F7D4E;  --green-bg:#E2F0E1;
+  --red:#B4462F;    --red-bg:#FAE0D8;
+  --amber:#A9722A;  --amber-bg:#FBEBCF;
+  --blue:#2F6E8F;   --blue-bg:#DEEDF4;
+  --violet:#6B4A8F; --violet-bg:#EAE1F5;
+
+  --r-sm:10px; --r-md:14px; --r-lg:20px;
+  --shadow-1:0 1px 2px rgba(74,53,38,.06), 0 4px 14px rgba(74,53,38,.08);
+  --shadow-2:0 2px 6px rgba(74,53,38,.10), 0 14px 34px rgba(74,53,38,.14);
+  --font:'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:var(--font); color:var(--ink); min-height:100vh; padding:20px 16px 60px;
+  background:
+    repeating-linear-gradient(91deg, rgba(139,94,60,.030) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(0deg,  rgba(139,94,60,.035) 0 1px, transparent 1px 34px),
+    radial-gradient(1200px 700px at 15% -10%, #FFF8EC 0%, transparent 60%),
+    linear-gradient(150deg,#F8EFE1 0%,#EFDFC6 48%,#E5D0AF 100%);
+  background-attachment:fixed;
+}
+.wrap{max-width:1240px;margin:0 auto;}
+
+/* ---------- header ---------- */
+.topbar{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  background:linear-gradient(140deg,#8B5E3C 0%,#6B452A 55%,#563620 100%);
+  border-radius:var(--r-lg); padding:20px 26px; margin-bottom:16px;
+  box-shadow:0 10px 0 rgba(86,54,32,.55), var(--shadow-2);
+  position:relative; overflow:hidden;
+}
+.topbar::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(96deg, rgba(255,255,255,.045) 0 2px, transparent 2px 9px);
+}
+.brand-logo{
+  width:58px;height:58px;border-radius:16px;flex:none;background:#FFFCF6;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;
+  font-weight:800;font-size:20px;color:var(--w-700);letter-spacing:-.5px;
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.3);
+}
+.brand-logo img{width:100%;height:100%;object-fit:contain;}
+.brand-txt h1{color:#FFF6E9;font-size:23px;font-weight:800;letter-spacing:-.3px;}
+.brand-txt span{display:block;color:#E4C8A5;font-size:12.5px;font-weight:500;margin-top:2px;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;z-index:1;}
+.conn{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+  background:rgba(255,255,255,.12);color:#F3DFC4;font-size:12.5px;font-weight:600;
+  border:1px solid rgba(255,255,255,.18);
+}
+.dot{width:8px;height:8px;border-radius:50%;background:#E8C06A;}
+.dot.on{background:#7CD98F;box-shadow:0 0 0 3px rgba(124,217,143,.25);}
+.dot.off{background:#E58A72;box-shadow:0 0 0 3px rgba(229,138,114,.25);}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{
+  flex:1 1 150px;cursor:pointer;text-align:center;padding:13px 12px;border-radius:var(--r-md);
+  font-weight:700;font-size:14px;color:var(--w-700);user-select:none;
+  background:linear-gradient(150deg,#FDF7EC,#EFDFC5);
+  border:1px solid var(--line); box-shadow:0 4px 0 #D3B78F, var(--shadow-1);
+  transition:transform .14s ease, box-shadow .14s ease, background .14s ease;
+}
+.tab:hover{transform:translateY(-2px);box-shadow:0 6px 0 #D3B78F, var(--shadow-2);}
+.tab.active{
+  background:linear-gradient(150deg,#9C6B42,#6B452A);color:#FFF6E9;border-color:#5E3F26;
+  box-shadow:0 2px 0 #4A3526, var(--shadow-1);transform:translateY(2px);
+}
+
+/* ---------- panels & cards ---------- */
+.panel{display:none;animation:fade .28s ease;}
+.panel.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+.card{
+  background:linear-gradient(180deg,#FFFCF6,#FDF7EC);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:22px;margin-bottom:18px;box-shadow:var(--shadow-1);
+}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.card h2{font-size:17px;font-weight:800;color:var(--w-700);display:flex;align-items:center;gap:9px;letter-spacing:-.2px;}
+.card h2 .ic{
+  width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:15px;
+  background:var(--w-150);border:1px solid var(--line);
+}
+.sub{font-size:12.5px;color:var(--ink-soft);font-weight:500;}
+
+/* ---------- form controls ---------- */
+label{display:block;font-size:11.5px;font-weight:700;color:var(--w-700);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.5px;}
+input,select,textarea{
+  width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:var(--r-sm);
+  background:#FFFDF9;color:var(--ink);font-size:14.5px;font-family:inherit;outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+input:focus,select:focus{border-color:var(--w-500);box-shadow:0 0 0 3.5px rgba(169,116,63,.16);}
+input.bad,select.bad{border-color:var(--red);box-shadow:0 0 0 3.5px rgba(180,70,47,.15);}
+input::placeholder{color:#BCA88E;}
+
+.strip{
+  display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;padding:16px 18px;border-radius:var(--r-md);
+  background:linear-gradient(140deg,#9C6B42,#6B452A);margin-bottom:16px;
+  box-shadow:0 6px 0 #563620, var(--shadow-1);
+}
+.strip label{color:#F3DFC4;}
+.strip .f{flex:1 1 200px;min-width:170px;}
+.strip select{font-weight:700;}
+
+.hintline{font-size:12.5px;font-weight:600;margin-top:8px;color:#EFD9BC;}
+.hintline.plus{color:#B7E9C0;} .hintline.minus{color:#F5BFAE;}
+
+/* ---------- entry rows ---------- */
+.rowhead{display:grid;grid-template-columns:36px 1fr 130px 44px;gap:10px;padding:0 14px 8px;}
+.rowhead span{font-size:10.5px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.7px;}
+.erow{
+  display:grid;grid-template-columns:36px 1fr 130px 44px;gap:10px;align-items:end;margin-bottom:10px;
+  padding:12px 14px;border-radius:var(--r-md);border:1px solid var(--line);
+  background:linear-gradient(150deg,#FFFDF8,#F6E9D4);box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.erow.rrow{grid-template-columns:36px 1.7fr 90px 1fr 1fr 1.2fr 44px;}
+.sn{font-weight:800;color:var(--ink-soft);font-size:13px;text-align:center;padding-bottom:11px;}
+.del{
+  background:linear-gradient(150deg,#D9836C,#B4462F);color:#fff;border:0;border-radius:var(--r-sm);
+  height:44px;cursor:pointer;font-size:19px;font-weight:700;box-shadow:0 3px 0 #8F3323;
+}
+.del:active{transform:translateY(3px);box-shadow:0 0 0 #8F3323;}
+
+/* ---------- searchable dropdown ---------- */
+.srch{position:relative;}
+.srch-list{
+  position:absolute;z-index:60;left:0;right:0;top:100%;margin-top:5px;background:#FFFDF9;
+  border:1.5px solid var(--line);border-radius:var(--r-sm);max-height:230px;overflow:auto;
+  box-shadow:var(--shadow-2);display:none;
+}
+.srch-list.open{display:block;}
+.srch-list div{padding:10px 13px;cursor:pointer;font-size:14px;border-bottom:1px solid #F4EADA;}
+.srch-list div:last-child{border-bottom:0;}
+.srch-list div:hover,.srch-list div.hi{background:var(--w-150);}
+.srch-list .qty-tag{float:right;font-size:11.5px;font-weight:700;color:var(--ink-soft);}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:0;cursor:pointer;font-weight:700;font-size:14.5px;color:#fff;padding:12px 22px;
+  border-radius:var(--r-sm);font-family:inherit;transition:transform .1s, filter .15s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn:active{transform:translateY(3px);}
+.btn[disabled]{opacity:.55;cursor:not-allowed;filter:grayscale(.35);transform:none;}
+.btn-primary{background:linear-gradient(150deg,#B88A5A,#8B5E3C);box-shadow:0 4px 0 #6B452A;}
+.btn-save{background:linear-gradient(150deg,#5FA26B,#3F7D4E);box-shadow:0 4px 0 #2C5C39;}
+.btn-export{background:linear-gradient(150deg,#4E9E82,#2E7D63);box-shadow:0 4px 0 #1F5C48;}
+.btn-ghost{background:#F3E5CD;color:var(--w-700);box-shadow:0 4px 0 #D3B78F;border:1px solid var(--line);}
+.btn-sm{padding:9px 15px;font-size:13px;}
+.btn:active.btn-primary{box-shadow:0 1px 0 #6B452A;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;}
+.chip{
+  background:var(--w-100);border:1px solid var(--line);border-radius:999px;padding:9px 16px;
+  font-size:13px;font-weight:700;color:var(--w-700);
+}
+.chip b{color:var(--w-600);}
+
+/* ---------- messages ---------- */
+.msg{padding:12px 16px;border-radius:var(--r-sm);margin-bottom:14px;font-weight:600;font-size:14px;display:none;}
+.msg.ok{display:block;background:var(--green-bg);color:var(--green);border:1px solid #B4D7B4;}
+.msg.err{display:block;background:var(--red-bg);color:var(--red);border:1px solid #E3AE9E;}
+.msg.warn{display:block;background:var(--amber-bg);color:var(--amber);border:1px solid #E5C793;}
+
+/* ---------- KPI cards ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:13px;margin-bottom:18px;}
+.kpi{
+  background:linear-gradient(165deg,#FFFDF8,#F5E7CF);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:16px 18px;box-shadow:var(--shadow-1);
+  border-left:5px solid var(--w-500);position:relative;overflow:hidden;
+}
+.kpi .lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--ink-soft);}
+.kpi .val{font-size:29px;font-weight:800;color:var(--w-700);margin-top:5px;line-height:1.1;letter-spacing:-1px;}
+.kpi .foot{font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-top:4px;}
+.kpi.green{border-left-color:var(--green);} .kpi.green .val{color:var(--green);}
+.kpi.red{border-left-color:var(--red);}     .kpi.red .val{color:var(--red);}
+.kpi.amber{border-left-color:var(--amber);} .kpi.amber .val{color:var(--amber);}
+.kpi.blue{border-left-color:var(--blue);}   .kpi.blue .val{color:var(--blue);}
+.kpi.violet{border-left-color:var(--violet);}.kpi.violet .val{color:var(--violet);}
+
+/* ---------- charts ---------- */
+.chart-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;}
+.chart-box{position:relative;height:290px;}
+@media(max-width:900px){.chart-grid{grid-template-columns:1fr;}}
+
+/* ---------- tables ---------- */
+.tbl-wrap{border:1px solid var(--line);border-radius:var(--r-md);overflow:auto;background:#FFFDF9;max-height:560px;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{
+  background:linear-gradient(150deg,#9C6B42,#6B452A);color:#FFF6E9;padding:12px 14px;text-align:left;
+  font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;
+  position:sticky;top:0;z-index:5;white-space:nowrap;
+}
+td{padding:11px 14px;border-bottom:1px solid #F1E5D2;}
+tbody tr:nth-child(even) td{background:#FDF8EE;}
+tbody tr:hover td{background:var(--w-150);}
+tr.total-row td{background:var(--w-200)!important;font-weight:800;color:var(--w-800);}
+.num{text-align:right;font-variant-numeric:tabular-nums;}
+.mono{font-variant-numeric:tabular-nums;}
+
+.pill{display:inline-block;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap;}
+.p-in{background:var(--green-bg);color:var(--green);}
+.p-out{background:var(--red-bg);color:var(--red);}
+.p-low{background:var(--amber-bg);color:var(--amber);}
+.p-zero{background:var(--w-150);color:var(--w-700);}
+.p-ret{background:var(--blue-bg);color:var(--blue);}
+.p-st{background:var(--violet-bg);color:var(--violet);}
+
+.link{
+  color:var(--w-600);font-weight:800;text-decoration:underline;text-underline-offset:3px;
+  cursor:pointer;background:none;border:0;font-size:14px;font-family:inherit;
+}
+.link:hover{color:var(--w-800);}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px;}
+.filters>div{flex:0 1 165px;}
+.filters .grow{flex:1 1 240px;}
+
+/* ---------- day detail modal ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(58,42,28,.55);backdrop-filter:blur(3px);
+  display:none;align-items:flex-start;justify-content:center;padding:26px 14px;z-index:200;overflow:auto;
+}
+.overlay.open{display:flex;}
+.modal{
+  background:linear-gradient(180deg,#FFFCF6,#FCF5E9);border-radius:var(--r-lg);width:100%;max-width:980px;
+  border:1px solid var(--line);box-shadow:var(--shadow-2);animation:pop .22s ease;
+}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98);}to{opacity:1;transform:none;}}
+.modal-head{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;
+  background:linear-gradient(140deg,#8B5E3C,#6B452A);border-radius:var(--r-lg) var(--r-lg) 0 0;flex-wrap:wrap;
+}
+.modal-head h3{color:#FFF6E9;font-size:17px;font-weight:800;}
+.modal-head .sub{color:#E4C8A5;}
+.x{background:rgba(255,255,255,.15);border:0;color:#FFF6E9;width:34px;height:34px;border-radius:9px;
+  cursor:pointer;font-size:18px;font-weight:700;}
+.x:hover{background:rgba(255,255,255,.28);}
+.modal-body{padding:20px 22px 24px;}
+.seg{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;}
+.seg button{
+  padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#FBF2E2;cursor:pointer;
+  font-weight:700;font-size:13px;color:var(--w-700);font-family:inherit;
+}
+.seg button.on{background:linear-gradient(150deg,#9C6B42,#6B452A);color:#FFF6E9;border-color:#5E3F26;}
+.seg button .n{opacity:.75;font-weight:600;margin-left:4px;}
+
+/* ---------- toast ---------- */
+.toast-wrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:300;}
+.toast{
+  padding:13px 18px;border-radius:var(--r-sm);color:#fff;font-weight:700;font-size:14px;max-width:360px;
+  box-shadow:var(--shadow-2);animation:slide .25s ease;
+}
+@keyframes slide{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+.toast.ok{background:linear-gradient(150deg,#4E9C63,#3F7D4E);}
+.toast.err{background:linear-gradient(150deg,#C55B41,#B4462F);}
+.toast.info{background:linear-gradient(150deg,#9C6B42,#6B452A);}
+
+/* ---------- misc ---------- */
+.empty{padding:40px 20px;text-align:center;color:var(--ink-soft);font-weight:600;font-size:14px;}
+.spin{
+  display:inline-block;width:15px;height:15px;border:2.5px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;
+}
+@keyframes sp{to{transform:rotate(360deg);}}
+.banner{
+  background:var(--amber-bg);border:1px solid #E5C793;color:var(--amber);padding:14px 18px;
+  border-radius:var(--r-md);margin-bottom:16px;font-weight:600;font-size:14px;display:none;
+}
+.banner.show{display:block;}
+.banner code{background:rgba(0,0,0,.07);padding:2px 6px;border-radius:5px;font-size:13px;}
+
+@media(max-width:820px){
+  .rowhead{display:none;}
+  .erow{grid-template-columns:1fr 100px 44px;}
+  .erow .sn{display:none;}
+  .erow.rrow{grid-template-columns:1fr 1fr;}
+  .erow.rrow .del{grid-column:1 / -1;}
+  .kpi .val{font-size:25px;}
+  body{padding:12px 10px 50px;}
+  .topbar{padding:16px 18px;}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header class="topbar">
+    <!-- Apna logo yahan lagayein: <div class="brand-logo"><img src="logo.png" alt=""></div> -->
+    <div class="brand-logo">OP</div>
+    <div class="brand-txt">
+      <h1>Oakcraft Packaging IMS</h1>
+      <span>Inventory Management System</span>
+    </div>
+    <div class="topbar-right">
+      <span class="conn"><span class="dot" id="connDot"></span><span id="connTxt">Connecting…</span></span>
+      <button class="btn btn-ghost btn-sm" onclick="App.refreshAll()">&#8635; Refresh</button>
+    </div>
+  </header>
+
+  <div class="banner" id="setupBanner">
+    <b>Setup adhoora hai.</b> is file ke top par <code>CONFIGURATION</code> block me <code>API_URL</code> me apna
+    Apps Script <code>/exec</code> deployment URL paste karein.
+  </div>
+
+  <!-- ============ TABS ============ -->
+  <nav class="tabs">
+    <div class="tab active" data-tab="entry"  onclick="App.tab('entry')">&#128230; In / Out Entry</div>
+    <div class="tab"        data-tab="dash"   onclick="App.tab('dash')">&#128200; Dashboard</div>
+    <div class="tab"        data-tab="daily"  onclick="App.tab('daily')">&#128197; Daily Records</div>
+    <div class="tab"        data-tab="return" onclick="App.tab('return')">&#128260; Return Recv</div>
+    <div class="tab"        data-tab="items"  onclick="App.tab('items')">&#128203; Item Master</div>
+  </nav>
+
+  <!-- ============ TAB 1 — ENTRY ============ -->
+  <section class="panel active" id="panel-entry">
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="ic">&#128230;</span> Multiple Entry Form</h2>
+        <span class="sub">Ek Type chunein, phir jitni chahein utni item rows add karein</span>
+      </div>
+      <div class="msg" id="entryMsg"></div>
+
+      <div class="strip">
+        <div class="f">
+          <label>Type</label>
+          <select id="entryType" onchange="App.onTypeChange()">
+            <optgroup label="Stock movement">
+              <option value="Fresh In">Fresh In &nbsp;(Stock +)</option>
+              <option value="Return In">Return In &nbsp;(Stock +)</option>
+              <option value="Out">Out &nbsp;(Stock &minus;)</option>
+            </optgroup>
+            <optgroup label="Daily status count">
+              <option value="Not Manifested">Not Manifested</option>
+              <option value="Not Ready">Not Ready</option>
+              <option value="Not Delivered">Not Delivered</option>
+            </optgroup>
+          </select>
+          <div class="hintline plus" id="typeHint">Fresh In — quantity actual inventory me add hogi.</div>
+        </div>
+        <div class="f" id="srcWrap">
+          <label>Order Source</label>
+          <select id="orderSource"></select>
+        </div>
+        <div class="f">
+          <label>Remarks (optional)</label>
+          <input id="entryRemarks" placeholder="Invoice no. / party / note">
+        </div>
+      </div>
+
+      <div id="itemMode">
+        <div class="rowhead"><span>#</span><span>Item Name</span><span>Qty</span><span></span></div>
+        <div id="rows"></div>
+      </div>
+
+      <div id="statusMode" style="display:none;">
+        <div class="erow" style="grid-template-columns:180px 1fr;">
+          <div><label id="statusQtyLabel">Qty</label><input type="number" min="1" id="statusQty" placeholder="0"></div>
+          <div><label>Remarks (optional)</label><input id="statusRemarks" placeholder="Note…"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="addRowBtn" onclick="App.addRow(1)">&#10133; Add Row</button>
+        <button class="btn btn-ghost"   id="add5Btn"   onclick="App.addRow(5)">&#10133; 5 Rows</button>
+        <button class="btn btn-ghost"   id="clearBtn"  onclick="App.resetEntry()">&#8634; Reset</button>
+        <button class="btn btn-save"    id="saveBtn"   onclick="App.saveEntries()">&#128190; Save Entries</button>
+        <span class="chip">Rows <b id="cRows">0</b></span>
+        <span class="chip">Total Qty <b id="cQty">0</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2 — DASHBOARD ============ -->
+  <section class="panel" id="panel-dash">
+    <div class="kpis" id="dashKpis"></div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="ic">&#128202;</span> Day-wise In vs Out</h2>
+        <div class="actions" style="margin:0;">
+          <select id="trendDays" onchange="App.loadTrend()" style="width:auto;">
+            <option value="7">Last 7 days</option>
+            <option value="14" selected>Last 14 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="60">Last 60 days</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box"><canvas id="trendChart"></canvas></div>
+        <div class="chart-box"><canvas id="topChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="ic">&#128230;</span> Live Inventory Stock</h2>
+        <div class="actions" style="margin:0;">
+          <span class="sub" id="stockUpdated"></span>
+          <button class="btn btn-export btn-sm" onclick="App.exportStock(this)">&#8681; Export Excel</button>
+          <button class="btn btn-ghost btn-sm" onclick="App.loadStock()">&#8635; Refresh</button>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="grow"><label>Search</label>
+          <input id="stockSearch" placeholder="Item name / SKU…" oninput="App.renderStock()"></div>
+        <div><label>Show</label>
+          <select id="stockFilter" onchange="App.renderStock()">
+            <option value="all">All items</option>
+            <option value="pos">In stock</option>
+            <option value="low">Low stock</option>
+            <option value="zero">Empty</option>
+            <option value="neg">Negative</option>
+          </select>
+        </div>
+        <div><label>Sort by</label>
+          <select id="stockSort" onchange="App.renderStock()">
+            <option value="name">Name (A–Z)</option>
+            <option value="current">Current stock</option>
+            <option value="out">Most dispatched</option>
+            <option value="in">Most received</option>
+          </select>
+        </div>
+      </div>
+      <div id="stockArea"><div class="empty">Loading…</div></div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 3 — DAILY RECORDS ============ -->
+  <section class="panel" id="panel-daily">
+    <div class="kpis" id="dailyKpis"></div>
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="ic">&#128197;</span> Daily Transaction Records</h2>
+        <div class="actions" style="margin:0;">
+          <button class="btn btn-export btn-sm" onclick="App.exportTxns(this)">&#8681; Export Excel</button>
+          <button class="btn btn-ghost btn-sm" onclick="App.loadDaily()">&#8635; Refresh</button>
+        </div>
+      </div>
+      <div class="filters">
+        <div><label>From</label><input type="date" id="fromD"></div>
+        <div><label>To</label><input type="date" id="toD"></div>
+        <div style="flex:0 0 auto;"><button class="btn btn-primary btn-sm" onclick="App.loadDaily()">Apply</button></div>
+        <div style="flex:0 0 auto;"><button class="btn btn-ghost btn-sm" onclick="App.quickRange(0)">Today</button></div>
+        <div style="flex:0 0 auto;"><button class="btn btn-ghost btn-sm" onclick="App.quickRange(7)">7 days</button></div>
+        <div style="flex:0 0 auto;"><button class="btn btn-ghost btn-sm" onclick="App.quickRange(30)">30 days</button></div>
+        <div style="flex:0 0 auto;"><button class="btn btn-ghost btn-sm" onclick="App.quickRange(-1)">All</button></div>
+      </div>
+      <p class="sub" style="margin-bottom:10px;">Kisi bhi number par click karein — us din ki poori item-wise list khul jayegi.</p>
+      <div id="dailyArea"><div class="empty">Loading…</div></div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 4 — RETURNS ============ -->
+  <section class="panel" id="panel-return">
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="ic">&#128260;</span> Return Received Entry</h2>
+        <span class="sub">Customer / courier returns ka record</span>
+      </div>
+      <div class="msg" id="returnMsg"></div>
+      <div class="strip">
+        <div class="f">
+          <label>Type</label>
+          <select disabled><option>Return</option></select>
+        </div>
+        <div class="f">
+          <label>Stock Effect</label>
+          <select id="retAddStock">
+            <option value="yes">"Ok Return" wapas stock me add karein</option>
+            <option value="no">Sirf record — stock unchanged</option>
+          </select>
+        </div>
+      </div>
+      <div id="retRows"></div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="App.addRetRow(1)">&#10133; Add Row</button>
+        <button class="btn btn-save" id="saveRetBtn" onclick="App.saveReturns()">&#128190; Save Returns</button>
+        <span class="chip">Rows <b id="cRetRows">0</b></span>
+        <span class="chip">Total Qty <b id="cRetQty">0</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 5 — ITEM MASTER ============ -->
+  <section class="panel" id="panel-items">
+    <div class="card">
+      <div class="card-head"><h2><span class="ic">&#10133;</span> Add New Item (SKU)</h2></div>
+      <div class="msg" id="skuMsg"></div>
+      <div class="strip">
+        <div class="f" style="flex:2 1 300px;">
+          <label>Item Name</label>
+          <input id="newSku" placeholder="e.g. Corrugated Box XL" onkeydown="if(event.key==='Enter')App.addSku()">
+        </div>
+        <div class="f" style="flex:0 1 170px;">
+          <label>Min Qty (alert)</label>
+          <input type="number" min="0" id="newSkuMin" placeholder="0">
+        </div>
+        <div style="flex:0 0 auto;">
+          <button class="btn btn-save" id="addSkuBtn" onclick="App.addSku()">&#10133; Add SKU</button>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="grow"><label>Search items</label>
+          <input id="itemSearch" placeholder="Type to filter…" oninput="App.renderItems()"></div>
+      </div>
+      <div id="itemArea"><div class="empty">Loading…</div></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ DAY DETAIL MODAL ============ -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)App.closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h3 id="modalTitle">Day Detail</h3><span class="sub" id="modalSub"></span></div>
+      <button class="x" onclick="App.closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="seg" id="modalSeg"></div>
+      <div id="modalBody"><div class="empty">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+/* ============================================================
+   OAKCRAFT PACKAGING IMS — Frontend (app.js)
+   Backend: Google Apps Script Web App  |  DB: Google Sheets
+   ============================================================ */
+
+var App = (function () {
+  'use strict';
+
+  var CFG = window.OAKCRAFT_CONFIG || {};
+  var S = {                       // app state
+    items: [], itemMap: {}, stockMap: {},
+    orderSrc: [], statusCats: [],
+    stock: [], stockTotals: {}, topMovers: [],
+    daily: [], dailyTotals: null, cats: [],
+    rowSeq: 0, retSeq: 0,
+    charts: { trend: null, top: null },
+    modalData: null, modalSeg: 'in'
+  };
+
+  /* ========================================================
+     API LAYER
+     ======================================================== */
+
+  function configured() {
+    return CFG.API_URL && CFG.API_URL.indexOf('script.google.com') > -1;
+  }
+
+  /** Primary transport: POST with text/plain (no CORS preflight). */
+  function apiPost(action, payload) {
+    var body = Object.assign({ action: action, token: CFG.API_TOKEN || '' }, payload || {});
+    return fetch(CFG.API_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json(); });
+  }
+
+  /** Fallback transport: JSONP (GET). Only for small/read payloads. */
+  function apiJsonp(action, payload) {
+    return new Promise(function (resolve, reject) {
+      var cb = '__oak_cb_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+      var q = ['action=' + encodeURIComponent(action), 'callback=' + cb,
+               'token=' + encodeURIComponent(CFG.API_TOKEN || '')];
+      Object.keys(payload || {}).forEach(function (k) {
+        var v = payload[k];
+        if (v === undefined || v === null) return;
+        q.push(encodeURIComponent(k) + '=' + encodeURIComponent(typeof v === 'object' ? JSON.stringify(v) : v));
+      });
+      var s = document.createElement('script');
+      var timer = setTimeout(function () { cleanup(); reject(new Error('Request timed out.')); }, 45000);
+      function cleanup() { clearTimeout(timer); delete window[cb]; if (s.parentNode) s.parentNode.removeChild(s); }
+      window[cb] = function (res) { cleanup(); resolve(res); };
+      s.onerror = function () { cleanup(); reject(new Error('Network error — API URL check karein.')); };
+      s.src = CFG.API_URL + (CFG.API_URL.indexOf('?') > -1 ? '&' : '?') + q.join('&');
+      document.body.appendChild(s);
+    });
+  }
+
+  function api(action, payload) {
+    if (!configured()) {
+      return Promise.reject(new Error('API_URL set nahi hai. Is file ke top par CONFIGURATION block edit karein.'));
+    }
+    return apiPost(action, payload)
+      .catch(function () { return apiJsonp(action, payload); })
+      .then(function (res) {
+        if (!res) throw new Error('Empty response from server.');
+        if (!res.ok) throw new Error(res.error || 'Unknown server error.');
+        return res.data;
+      });
+  }
+
+  /* ========================================================
+     UI UTILITIES
+     ======================================================== */
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function n(v) { return (Number(v) || 0).toLocaleString('en-IN'); }
+
+  function toast(text, kind) {
+    var t = document.createElement('div');
+    t.className = 'toast ' + (kind || 'info');
+    t.textContent = text;
+    $('toasts').appendChild(t);
+    setTimeout(function () {
+      t.style.transition = 'opacity .3s, transform .3s';
+      t.style.opacity = '0'; t.style.transform = 'translateX(20px)';
+      setTimeout(function () { t.remove(); }, 320);
+    }, 4200);
+  }
+
+  function msg(id, text, kind) {
+    var m = $(id);
+    m.textContent = text;
+    m.className = 'msg ' + (kind || 'ok');
+    if (kind === 'ok') setTimeout(function () { m.className = 'msg'; }, 6000);
+  }
+
+  function busy(btn, on, label) {
+    if (!btn) return;
+    btn.disabled = on;
+    if (on) { btn.dataset.old = btn.innerHTML; btn.innerHTML = '<span class="spin"></span> ' + (label || 'Working…'); }
+    else if (btn.dataset.old) { btn.innerHTML = btn.dataset.old; }
+  }
+
+  function conn(state, text) {
+    $('connDot').className = 'dot ' + state;
+    $('connTxt').textContent = text;
+  }
+
+  function todayStr(offset) {
+    var d = new Date();
+    if (offset) d.setDate(d.getDate() + offset);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function pretty(d) {
+    var p = String(d).split('-');
+    if (p.length !== 3) return d;
+    var M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return p[2] + ' ' + M[Number(p[1]) - 1] + ' ' + p[0];
+  }
+
+  /* ========================================================
+     SEARCHABLE ITEM DROPDOWN
+     ======================================================== */
+
+  function attachSearch(inputId, listId) {
+    var inp = $(inputId), list = $(listId), hi = -1;
+
+    function render() {
+      var q = inp.value.trim().toLowerCase();
+      var m = S.items.filter(function (i) { return i.name.toLowerCase().indexOf(q) > -1; }).slice(0, 80);
+      list.innerHTML = '';
+      if (!m.length) { list.classList.remove('open'); return; }
+      m.forEach(function (it, i) {
+        var d = document.createElement('div');
+        var cur = S.stockMap[it.name];
+        d.innerHTML = esc(it.name) + (cur !== undefined ? '<span class="qty-tag">Stock ' + cur + '</span>' : '');
+        d.dataset.name = it.name;
+        if (i === hi) d.className = 'hi';
+        d.onmousedown = function () { pick(it.name); };
+        list.appendChild(d);
+      });
+      list.classList.add('open');
+    }
+    function pick(name) { inp.value = name; inp.classList.remove('bad'); list.classList.remove('open'); }
+    function scroll() { var el = list.children[hi]; if (el) el.scrollIntoView({ block: 'nearest' }); }
+
+    inp.addEventListener('input', function () { hi = -1; inp.classList.remove('bad'); render(); });
+    inp.addEventListener('focus', function () { hi = -1; render(); });
+    inp.addEventListener('blur', function () { setTimeout(function () { list.classList.remove('open'); }, 160); });
+    inp.addEventListener('keydown', function (e) {
+      var len = list.children.length;
+      if (e.key === 'ArrowDown') { e.preventDefault(); hi = Math.min(hi + 1, len - 1); render(); scroll(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); hi = Math.max(hi - 1, 0); render(); scroll(); }
+      else if (e.key === 'Enter' && hi >= 0 && list.children[hi]) {
+        e.preventDefault(); pick(list.children[hi].dataset.name);
+      } else if (e.key === 'Escape') { list.classList.remove('open'); }
+    });
+  }
+
+  function matchItem(v) {
+    var k = String(v).trim().toLowerCase();
+    return S.itemMap[k] || null;
+  }
+
+  /* ========================================================
+     TAB 1 — ENTRY FORM
+     ======================================================== */
+
+  function isStatusType(t) { return S.statusCats.indexOf(t) > -1; }
+
+  function onTypeChange() {
+    var t = $('entryType').value, st = isStatusType(t);
+    $('itemMode').style.display = st ? 'none' : '';
+    $('statusMode').style.display = st ? '' : 'none';
+    $('srcWrap').style.display = st ? 'none' : '';
+    ['addRowBtn', 'add5Btn'].forEach(function (id) { $(id).style.display = st ? 'none' : ''; });
+
+    var h = $('typeHint');
+    if (st) { h.className = 'hintline'; h.textContent = t + ' — sirf count record hoga, stock par asar nahi.'; $('statusQtyLabel').textContent = t + ' Qty'; }
+    else if (t === 'Out') { h.className = 'hintline minus'; h.textContent = 'Out — quantity actual inventory se ghategi.'; }
+    else { h.className = 'hintline plus'; h.textContent = t + ' — quantity actual inventory me add hogi.'; }
+    countRows();
+  }
+
+  function addRow(count) {
+    count = count || 1;
+    for (var k = 0; k < count; k++) {
+      var id = ++S.rowSeq;
+      var div = document.createElement('div');
+      div.className = 'erow'; div.id = 'row-' + id;
+      div.innerHTML =
+        '<div class="sn"></div>' +
+        '<div class="srch"><label>Item Name</label>' +
+          '<input id="item-' + id + '" autocomplete="off" placeholder="Type to search…">' +
+          '<div class="srch-list" id="list-' + id + '"></div></div>' +
+        '<div><label>Qty</label><input type="number" min="1" id="qty-' + id + '" placeholder="0" oninput="App.countRows()"></div>' +
+        '<button class="del" onclick="App.removeRow(' + id + ')" title="Remove">&times;</button>';
+      $('rows').appendChild(div);
+      attachSearch('item-' + id, 'list-' + id);
+    }
+    countRows();
+  }
+
+  function removeRow(id) {
+    var el = $('row-' + id); if (el) el.remove();
+    if (!document.querySelectorAll('#rows .erow').length) addRow(1);
+    countRows();
+  }
+
+  function countRows() {
+    var rows = document.querySelectorAll('#rows .erow'), q = 0;
+    rows.forEach(function (r, i) {
+      r.querySelector('.sn').textContent = i + 1;
+      q += Number($('qty-' + r.id.split('-')[1]).value) || 0;
+    });
+    $('cRows').textContent = rows.length;
+    $('cQty').textContent = q;
+  }
+
+  function resetEntry() {
+    $('rows').innerHTML = ''; S.rowSeq = 0; addRow(3);
+    $('entryRemarks').value = '';
+    $('statusQty').value = ''; $('statusRemarks').value = '';
+  }
+
+  function saveEntries() {
+    var btn = $('saveBtn'), type = $('entryType').value;
+
+    if (isStatusType(type)) {
+      var q = Number($('statusQty').value);
+      if (!q || q <= 0) { msg('entryMsg', 'Qty 0 se zyada honi chahiye.', 'err'); return; }
+      busy(btn, true, 'Saving…');
+      api('saveStatus', { category: type, qty: q, remarks: $('statusRemarks').value })
+        .then(function (r) {
+          busy(btn, false);
+          msg('entryMsg', '✔ ' + r.category + ' — Qty ' + r.qty + ' save ho gayi.', 'ok');
+          toast(r.category + ' saved', 'ok');
+          $('statusQty').value = ''; $('statusRemarks').value = '';
+        })
+        .catch(function (e) { busy(btn, false); msg('entryMsg', '⚠ ' + e.message, 'err'); });
+      return;
+    }
+
+    var lines = [], bad = 0;
+    document.querySelectorAll('#rows .erow').forEach(function (r) {
+      var id = r.id.split('-')[1];
+      var inp = $('item-' + id), qEl = $('qty-' + id);
+      var raw = inp.value.trim(), qty = Number(qEl.value);
+      if (!raw && !qEl.value) return;
+      var name = matchItem(raw);
+      if (!name) { inp.classList.add('bad'); bad++; return; }
+      if (!qty || qty <= 0) { qEl.classList.add('bad'); bad++; return; }
+      inp.classList.remove('bad'); qEl.classList.remove('bad');
+      lines.push({ item: name, qty: qty });
+    });
+
+    if (bad) { msg('entryMsg', 'Highlighted rows theek karein — Item list me se chunein aur Qty > 0 rakhein.', 'err'); return; }
+    if (!lines.length) { msg('entryMsg', 'Kam se kam ek row bharein.', 'err'); return; }
+
+    busy(btn, true, 'Saving…');
+    api('saveEntries', {
+      type: type, lines: lines,
+      orderSource: $('orderSource').value,
+      remarks: $('entryRemarks').value
+    }).then(function (r) {
+      busy(btn, false);
+      var t = '✔ ' + r.saved + ' entries saved (Total Qty ' + r.totalQty + ')';
+      if (r.skipped && r.skipped.length) {
+        msg('entryMsg', t + ' — Skipped (low/empty stock): ' + r.skipped.join('; '), 'warn');
+      } else {
+        msg('entryMsg', t, 'ok');
+      }
+      toast(r.saved + ' entries saved', 'ok');
+      resetEntry();
+      loadStock(true);
+    }).catch(function (e) { busy(btn, false); msg('entryMsg', '⚠ ' + e.message, 'err'); });
+  }
+
+  /* ========================================================
+     TAB 2 — DASHBOARD
+     ======================================================== */
+
+  function kpi(label, value, foot, cls) {
+    return '<div class="kpi ' + (cls || '') + '"><div class="lbl">' + esc(label) + '</div>' +
+           '<div class="val">' + value + '</div>' +
+           (foot ? '<div class="foot">' + esc(foot) + '</div>' : '') + '</div>';
+  }
+
+  function loadStock(silent) {
+    if (!silent) $('stockArea').innerHTML = '<div class="empty">Loading…</div>';
+    return api('stock').then(function (d) {
+      S.stock = d.rows; S.stockTotals = d.totals; S.topMovers = d.topMovers;
+      S.stockMap = {};
+      d.rows.forEach(function (r) { S.stockMap[r.item] = r.current; });
+      $('stockUpdated').textContent = 'Updated ' + d.updated;
+
+      var t = d.totals;
+      $('dashKpis').innerHTML =
+        kpi('Total Items', n(t.items), 'Item master', 'blue') +
+        kpi('Total In', n(t.inQty), 'Fresh + Return', 'green') +
+        kpi('Total Out', n(t.outQty), 'Dispatched', 'red') +
+        kpi('Current Stock', n(t.current), 'Live balance') +
+        kpi('Low Stock', n(t.low), 'Min qty ke neeche', 'amber') +
+        kpi('Empty Items', n(t.empty), 'Zero balance', 'violet');
+
+      renderStock();
+      drawTop();
+    }).catch(function (e) {
+      $('stockArea').innerHTML = '<div class="empty">⚠ ' + esc(e.message) + '</div>';
+    });
+  }
+
+  function renderStock() {
+    if (!S.stock.length) { $('stockArea').innerHTML = '<div class="empty">Abhi koi item nahi.</div>'; return; }
+    var term = ($('stockSearch').value || '').trim().toLowerCase();
+    var f = $('stockFilter').value, sort = $('stockSort').value;
+
+    var rows = S.stock.filter(function (d) {
+      if (term && d.item.toLowerCase().indexOf(term) === -1) return false;
+      if (f === 'pos' && !(d.current > 0)) return false;
+      if (f === 'low' && !d.low) return false;
+      if (f === 'zero' && d.current !== 0) return false;
+      if (f === 'neg' && !(d.current < 0)) return false;
+      return true;
+    });
+
+    rows.sort(function (a, b) {
+      if (sort === 'current') return b.current - a.current;
+      if (sort === 'out') return b.outQty - a.outQty;
+      if (sort === 'in') return b.inQty - a.inQty;
+      return a.item.localeCompare(b.item);
+    });
+
+    if (!rows.length) { $('stockArea').innerHTML = '<div class="empty">Koi item match nahi hua.</div>'; return; }
+
+    var h = '<div class="tbl-wrap"><table><thead><tr>' +
+      '<th>Item Name</th><th class="num">Fresh In</th><th class="num">Return In</th>' +
+      '<th class="num">Total In</th><th class="num">Out</th><th class="num">Current</th>' +
+      '<th class="num">Min</th><th>Status</th></tr></thead><tbody>';
+    var cls = { 'In Stock': 'p-in', 'Low Stock': 'p-low', 'Negative': 'p-out', 'Empty': 'p-zero' };
+    rows.forEach(function (d) {
+      h += '<tr><td><b>' + esc(d.item) + '</b></td>' +
+        '<td class="num mono">' + n(d.freshIn) + '</td>' +
+        '<td class="num mono">' + n(d.returnIn) + '</td>' +
+        '<td class="num mono">' + n(d.inQty) + '</td>' +
+        '<td class="num mono">' + n(d.outQty) + '</td>' +
+        '<td class="num mono"><b style="font-size:15px;">' + n(d.current) + '</b></td>' +
+        '<td class="num mono">' + (d.min || '—') + '</td>' +
+        '<td><span class="pill ' + (cls[d.status] || 'p-zero') + '">' + d.status + '</span></td></tr>';
+    });
+    $('stockArea').innerHTML = h + '</tbody></table></div>';
+  }
+
+  function loadTrend() {
+    var days = Number($('trendDays').value) || CFG.TREND_DAYS || 14;
+    return api('trend', { days: days }).then(drawTrend).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function chartFont() { return { family: "'Plus Jakarta Sans', sans-serif", weight: '600' }; }
+
+  function drawTrend(data) {
+    var ctx = $('trendChart');
+    if (S.charts.trend) S.charts.trend.destroy();
+    S.charts.trend = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map(function (d) { return pretty(d.date).slice(0, 6); }),
+        datasets: [
+          { label: 'In',  data: data.map(function (d) { return d.inQty; }),  backgroundColor: '#5FA26B', borderRadius: 5, maxBarThickness: 26 },
+          { label: 'Out', data: data.map(function (d) { return d.outQty; }), backgroundColor: '#C55B41', borderRadius: 5, maxBarThickness: 26 },
+          { label: 'Return', type: 'line', data: data.map(function (d) { return d.retQty; }),
+            borderColor: '#2F6E8F', backgroundColor: '#2F6E8F', tension: .35, borderWidth: 2.5, pointRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { font: chartFont(), color: '#6B452A', boxWidth: 12, usePointStyle: true } },
+          title: { display: true, text: 'Day-wise In / Out / Return Qty', font: { size: 13, family: "'Plus Jakarta Sans', sans-serif", weight: '700' }, color: '#6B452A' }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: chartFont(), color: '#7A6350' } },
+          y: { beginAtZero: true, grid: { color: '#EFE1CB' }, ticks: { font: chartFont(), color: '#7A6350' } }
+        }
+      }
+    });
+  }
+
+  function drawTop() {
+    var ctx = $('topChart');
+    if (S.charts.top) S.charts.top.destroy();
+    var d = (S.topMovers || []).filter(function (x) { return x.qty > 0; });
+    if (!d.length) { if (ctx.getContext) ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height); return; }
+    S.charts.top = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: d.map(function (x) { return x.item.length > 22 ? x.item.slice(0, 21) + '…' : x.item; }),
+        datasets: [{ label: 'Dispatched Qty', data: d.map(function (x) { return x.qty; }),
+          backgroundColor: '#A9743F', borderRadius: 5 }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'Top Dispatched Items', font: { size: 13, family: "'Plus Jakarta Sans', sans-serif", weight: '700' }, color: '#6B452A' }
+        },
+        scales: {
+          x: { beginAtZero: true, grid: { color: '#EFE1CB' }, ticks: { font: chartFont(), color: '#7A6350' } },
+          y: { grid: { display: false }, ticks: { font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 }, color: '#7A6350' } }
+        }
+      }
+    });
+  }
+
+  /* ========================================================
+     TAB 3 — DAILY RECORDS
+     ======================================================== */
+
+  function quickRange(days) {
+    if (days === -1) { $('fromD').value = ''; $('toD').value = ''; }
+    else if (days === 0) { $('fromD').value = todayStr(); $('toD').value = todayStr(); }
+    else { $('fromD').value = todayStr(-(days - 1)); $('toD').value = todayStr(); }
+    loadDaily();
+  }
+
+  function loadDaily() {
+    $('dailyArea').innerHTML = '<div class="empty">Loading…</div>';
+    return api('daily', { from: $('fromD').value, to: $('toD').value })
+      .then(function (d) {
+        S.daily = d.rows; S.dailyTotals = d.totals; S.cats = d.cats;
+        renderDailyKpis(); renderDaily();
+      })
+      .catch(function (e) { $('dailyArea').innerHTML = '<div class="empty">⚠ ' + esc(e.message) + '</div>'; });
+  }
+
+  function renderDailyKpis() {
+    var t = S.dailyTotals;
+    if (!t) { $('dailyKpis').innerHTML = ''; return; }
+    var statusCards = S.cats.map(function (c) {
+      return kpi(c, n(t.status[c] || 0), 'Qty', 'violet');
+    }).join('');
+    $('dailyKpis').innerHTML =
+      kpi('In Qty', n(t.inQty), t.inCount + ' entries', 'green') +
+      kpi('Out Qty', n(t.outQty), t.outCount + ' entries', 'red') +
+      kpi('Return Recv', n(t.retQty), 'Ok ' + t.retOk + ' / Dmg ' + t.retDamaged, 'blue') +
+      kpi('Net Movement', n(t.inQty - t.outQty), 'In − Out') +
+      statusCards;
+  }
+
+  function renderDaily() {
+    if (!S.daily.length) { $('dailyArea').innerHTML = '<div class="empty">Is range me koi record nahi.</div>'; return; }
+
+    var h = '<div class="tbl-wrap"><table><thead><tr>' +
+      '<th>Date</th><th class="num">In Entries</th><th class="num">In Qty</th>' +
+      '<th class="num">Fresh</th><th class="num">Return In</th>' +
+      '<th class="num">Out Entries</th><th class="num">Out Qty</th>' +
+      '<th class="num">Return Recv</th>' +
+      S.cats.map(function (c) { return '<th class="num">' + esc(c) + '</th>'; }).join('') +
+      '<th class="num">Net</th></tr></thead><tbody>';
+
+    S.daily.forEach(function (d) {
+      var net = d.inQty - d.outQty;
+      var netCls = net > 0 ? 'p-in' : (net < 0 ? 'p-out' : 'p-zero');
+      function L(val, seg) {
+        if (!val) return '<span class="mono">0</span>';
+        return '<button class="link" onclick="App.openDay(\'' + d.date + '\',\'' + seg + '\')">' + n(val) + '</button>';
+      }
+      h += '<tr>' +
+        '<td><button class="link" onclick="App.openDay(\'' + d.date + '\',\'in\')">' + pretty(d.date) + '</button></td>' +
+        '<td class="num">' + L(d.inCount, 'in') + '</td>' +
+        '<td class="num">' + L(d.inQty, 'in') + '</td>' +
+        '<td class="num mono">' + n(d.freshQty) + '</td>' +
+        '<td class="num mono">' + n(d.returnInQty) + '</td>' +
+        '<td class="num">' + L(d.outCount, 'out') + '</td>' +
+        '<td class="num">' + L(d.outQty, 'out') + '</td>' +
+        '<td class="num">' + L(d.retQty, 'returns') + '</td>' +
+        S.cats.map(function (c) { return '<td class="num">' + L(d.status[c] || 0, 'status') + '</td>'; }).join('') +
+        '<td class="num"><span class="pill ' + netCls + '">' + (net > 0 ? '+' : '') + n(net) + '</span></td></tr>';
+    });
+
+    var t = S.dailyTotals;
+    h += '<tr class="total-row"><td>TOTAL</td>' +
+      '<td class="num">' + n(t.inCount) + '</td><td class="num">' + n(t.inQty) + '</td>' +
+      '<td class="num">' + n(t.freshQty) + '</td><td class="num">' + n(t.returnInQty) + '</td>' +
+      '<td class="num">' + n(t.outCount) + '</td><td class="num">' + n(t.outQty) + '</td>' +
+      '<td class="num">' + n(t.retQty) + '</td>' +
+      S.cats.map(function (c) { return '<td class="num">' + n(t.status[c] || 0) + '</td>'; }).join('') +
+      '<td class="num">' + n(t.inQty - t.outQty) + '</td></tr>';
+
+    $('dailyArea').innerHTML = h + '</tbody></table></div>';
+  }
+
+  /* ---------- day detail modal ---------- */
+
+  function openDay(date, seg) {
+    S.modalSeg = seg || 'in';
+    $('modalTitle').textContent = pretty(date) + ' — Full Day Detail';
+    $('modalSub').textContent = 'Loading…';
+    $('modalSeg').innerHTML = '';
+    $('modalBody').innerHTML = '<div class="empty">Loading…</div>';
+    $('overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    api('dayDetail', { date: date }).then(function (d) {
+      S.modalData = d;
+      var inQ  = d.in.reduce(function (s, x) { return s + x.qty; }, 0);
+      var outQ = d.out.reduce(function (s, x) { return s + x.qty; }, 0);
+      var retQ = d.returns.reduce(function (s, x) { return s + x.qty; }, 0);
+      var stQ  = d.status.reduce(function (s, x) { return s + x.qty; }, 0);
+      $('modalSub').textContent = 'In ' + inQ + '  •  Out ' + outQ + '  •  Return ' + retQ + '  •  Status ' + stQ;
+
+      var segs = [
+        { k: 'in',      t: 'In',        c: d.in.length,      q: inQ },
+        { k: 'out',     t: 'Out',       c: d.out.length,     q: outQ },
+        { k: 'returns', t: 'Return',    c: d.returns.length, q: retQ },
+        { k: 'status',  t: 'Status',    c: d.status.length,  q: stQ }
+      ];
+      $('modalSeg').innerHTML = segs.map(function (s) {
+        return '<button class="' + (s.k === S.modalSeg ? 'on' : '') + '" onclick="App.modalTab(\'' + s.k + '\')">' +
+               s.t + '<span class="n">(' + s.c + ' • ' + s.q + ')</span></button>';
+      }).join('');
+      renderModal();
+    }).catch(function (e) {
+      $('modalBody').innerHTML = '<div class="empty">⚠ ' + esc(e.message) + '</div>';
+    });
+  }
+
+  function modalTab(k) {
+    S.modalSeg = k;
+    Array.prototype.forEach.call($('modalSeg').children, function (b, i) {
+      b.className = (['in', 'out', 'returns', 'status'][i] === k) ? 'on' : '';
+    });
+    renderModal();
+  }
+
+  function renderModal() {
+    var d = S.modalData; if (!d) return;
+    var k = S.modalSeg, h = '', total = 0;
+
+    if (k === 'in' || k === 'out') {
+      var rows = d[k];
+      if (!rows.length) { $('modalBody').innerHTML = '<div class="empty">Is din koi ' + k.toUpperCase() + ' entry nahi.</div>'; return; }
+      h = '<div class="tbl-wrap"><table><thead><tr><th style="width:44px;">#</th><th>Item Name</th>' +
+          '<th>Type</th><th>Order Source</th><th class="num">Qty</th></tr></thead><tbody>';
+      rows.forEach(function (r, i) {
+        total += r.qty;
+        h += '<tr><td class="mono">' + (i + 1) + '</td><td><b>' + esc(r.item) + '</b></td>' +
+             '<td><span class="pill ' + (k === 'out' ? 'p-out' : 'p-in') + '">' + esc(r.type) + '</span></td>' +
+             '<td>' + esc(r.source || '—') + '</td>' +
+             '<td class="num mono"><b>' + n(r.qty) + '</b></td></tr>';
+      });
+      h += '<tr class="total-row"><td></td><td>TOTAL (' + rows.length + ' items)</td><td></td><td></td>' +
+           '<td class="num">' + n(total) + '</td></tr></tbody></table></div>';
+
+    } else if (k === 'returns') {
+      if (!d.returns.length) { $('modalBody').innerHTML = '<div class="empty">Is din koi return nahi aaya.</div>'; return; }
+      h = '<div class="tbl-wrap"><table><thead><tr><th style="width:44px;">#</th><th>Item Name</th>' +
+          '<th>Return Type</th><th>Status</th><th>Remarks</th><th class="num">Qty</th></tr></thead><tbody>';
+      d.returns.forEach(function (r, i) {
+        total += r.qty;
+        h += '<tr><td class="mono">' + (i + 1) + '</td><td><b>' + esc(r.item) + '</b></td>' +
+             '<td>' + esc(r.returnType) + '</td>' +
+             '<td><span class="pill ' + (r.returnStatus === 'Damaged Return' ? 'p-out' : 'p-ret') + '">' + esc(r.returnStatus) + '</span></td>' +
+             '<td>' + esc(r.remarks || '—') + '</td>' +
+             '<td class="num mono"><b>' + n(r.qty) + '</b></td></tr>';
+      });
+      h += '<tr class="total-row"><td></td><td>TOTAL (' + d.returns.length + ' rows)</td><td></td><td></td><td></td>' +
+           '<td class="num">' + n(total) + '</td></tr></tbody></table></div>';
+
+    } else {
+      if (!d.status.length) { $('modalBody').innerHTML = '<div class="empty">Is din koi status entry nahi.</div>'; return; }
+      h = '<div class="tbl-wrap"><table><thead><tr><th style="width:44px;">#</th><th>Time</th>' +
+          '<th>Category</th><th>Remarks</th><th class="num">Qty</th></tr></thead><tbody>';
+      d.status.forEach(function (r, i) {
+        total += r.qty;
+        h += '<tr><td class="mono">' + (i + 1) + '</td><td class="mono">' + esc(r.time) + '</td>' +
+             '<td><span class="pill p-st">' + esc(r.category) + '</span></td>' +
+             '<td>' + esc(r.remarks || '—') + '</td>' +
+             '<td class="num mono"><b>' + n(r.qty) + '</b></td></tr>';
+      });
+      h += '<tr class="total-row"><td></td><td>TOTAL</td><td></td><td></td>' +
+           '<td class="num">' + n(total) + '</td></tr></tbody></table></div>';
+    }
+    $('modalBody').innerHTML = h;
+  }
+
+  function closeModal() {
+    $('overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ========================================================
+     TAB 4 — RETURNS
+     ======================================================== */
+
+  function addRetRow(count) {
+    count = count || 1;
+    for (var k = 0; k < count; k++) {
+      var id = ++S.retSeq;
+      var div = document.createElement('div');
+      div.className = 'erow rrow'; div.id = 'rrow-' + id;
+      div.innerHTML =
+        '<div class="sn"></div>' +
+        '<div class="srch"><label>Item Name</label>' +
+          '<input id="ritem-' + id + '" autocomplete="off" placeholder="Type to search…">' +
+          '<div class="srch-list" id="rlist-' + id + '"></div></div>' +
+        '<div><label>Qty</label><input type="number" min="1" id="rqty-' + id + '" placeholder="0" oninput="App.countRetRows()"></div>' +
+        '<div><label>Return Type</label><select id="rtype-' + id + '">' +
+          '<option>Customer Return</option><option>Courier Return</option></select></div>' +
+        '<div><label>Status</label><select id="rstat-' + id + '">' +
+          '<option>Ok Return</option><option>Damaged Return</option></select></div>' +
+        '<div><label>Remarks</label><input id="rrem-' + id + '" placeholder="Optional"></div>' +
+        '<button class="del" onclick="App.removeRetRow(' + id + ')">&times;</button>';
+      $('retRows').appendChild(div);
+      attachSearch('ritem-' + id, 'rlist-' + id);
+    }
+    countRetRows();
+  }
+
+  function removeRetRow(id) {
+    var el = $('rrow-' + id); if (el) el.remove();
+    if (!document.querySelectorAll('#retRows .erow').length) addRetRow(1);
+    countRetRows();
+  }
+
+  function countRetRows() {
+    var rows = document.querySelectorAll('#retRows .erow'), q = 0;
+    rows.forEach(function (r, i) {
+      r.querySelector('.sn').textContent = i + 1;
+      q += Number($('rqty-' + r.id.split('-')[1]).value) || 0;
+    });
+    $('cRetRows').textContent = rows.length;
+    $('cRetQty').textContent = q;
+  }
+
+  function saveReturns() {
+    var btn = $('saveRetBtn'), lines = [], bad = 0;
+    document.querySelectorAll('#retRows .erow').forEach(function (r) {
+      var id = r.id.split('-')[1];
+      var inp = $('ritem-' + id), qEl = $('rqty-' + id);
+      var raw = inp.value.trim(), qty = Number(qEl.value);
+      if (!raw && !qEl.value) return;
+      var name = matchItem(raw);
+      if (!name) { inp.classList.add('bad'); bad++; return; }
+      if (!qty || qty <= 0) { qEl.classList.add('bad'); bad++; return; }
+      inp.classList.remove('bad'); qEl.classList.remove('bad');
+      lines.push({
+        item: name, qty: qty,
+        returnType: $('rtype-' + id).value,
+        returnStatus: $('rstat-' + id).value,
+        remarks: $('rrem-' + id).value.trim()
+      });
+    });
+
+    if (bad) { msg('returnMsg', 'Highlighted rows theek karein.', 'err'); return; }
+    if (!lines.length) { msg('returnMsg', 'Kam se kam ek row bharein.', 'err'); return; }
+
+    busy(btn, true, 'Saving…');
+    api('saveReturns', { lines: lines, addToStock: $('retAddStock').value === 'yes' })
+      .then(function (r) {
+        busy(btn, false);
+        msg('returnMsg', '✔ ' + r.saved + ' returns saved' +
+          (r.restocked ? ' — ' + r.restocked + ' Ok Return stock me wapas add hue.' : '.'), 'ok');
+        toast(r.saved + ' returns saved', 'ok');
+        $('retRows').innerHTML = ''; S.retSeq = 0; addRetRow(2);
+        loadStock(true);
+      })
+      .catch(function (e) { busy(btn, false); msg('returnMsg', '⚠ ' + e.message, 'err'); });
+  }
+
+  /* ========================================================
+     TAB 5 — ITEM MASTER
+     ======================================================== */
+
+  function addSku() {
+    var btn = $('addSkuBtn'), name = ($('newSku').value || '').trim();
+    if (!name) { msg('skuMsg', 'Item name daalein.', 'err'); $('newSku').focus(); return; }
+    busy(btn, true, 'Adding…');
+    api('addSku', { name: name, minQty: $('newSkuMin').value })
+      .then(function (r) {
+        busy(btn, false);
+        S.items.push({ name: r.name, min: r.min });
+        S.items.sort(function (a, b) { return a.name.localeCompare(b.name); });
+        S.itemMap[r.name.toLowerCase()] = r.name;
+        msg('skuMsg', '✔ "' + r.name + '" add ho gaya.', 'ok');
+        toast('SKU added: ' + r.name, 'ok');
+        $('newSku').value = ''; $('newSkuMin').value = ''; $('newSku').focus();
+        renderItems();
+      })
+      .catch(function (e) { busy(btn, false); msg('skuMsg', '⚠ ' + e.message, 'err'); });
+  }
+
+  function renderItems() {
+    var term = ($('itemSearch').value || '').trim().toLowerCase();
+    var list = S.items.filter(function (i) { return !term || i.name.toLowerCase().indexOf(term) > -1; });
+    if (!list.length) { $('itemArea').innerHTML = '<div class="empty">Koi item nahi mila.</div>'; return; }
+    var h = '<div class="tbl-wrap"><table><thead><tr><th style="width:56px;">#</th><th>Item Name</th>' +
+            '<th class="num">Min Qty</th><th class="num">Current Stock</th></tr></thead><tbody>';
+    list.forEach(function (it, i) {
+      var cur = S.stockMap[it.name];
+      h += '<tr><td class="mono">' + (i + 1) + '</td><td><b>' + esc(it.name) + '</b></td>' +
+           '<td class="num mono">' + (it.min || '—') + '</td>' +
+           '<td class="num mono">' + (cur === undefined ? '—' : n(cur)) + '</td></tr>';
+    });
+    $('itemArea').innerHTML = h + '</tbody></table></div>';
+  }
+
+  /* ========================================================
+     EXPORTS
+     ======================================================== */
+
+  function download(res) {
+    var bin = atob(res.b64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var url = URL.createObjectURL(new Blob([bytes], { type: res.mime }));
+    var a = document.createElement('a');
+    a.href = url; a.download = res.filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function exportStock(btn) {
+    busy(btn, true, 'Preparing…');
+    api('exportStock').then(function (r) { busy(btn, false); download(r); toast('Excel downloaded', 'ok'); })
+      .catch(function (e) { busy(btn, false); toast('Export failed: ' + e.message, 'err'); });
+  }
+
+  function exportTxns(btn) {
+    busy(btn, true, 'Preparing…');
+    api('exportTxns', { from: $('fromD').value, to: $('toD').value })
+      .then(function (r) { busy(btn, false); download(r); toast('Excel downloaded', 'ok'); })
+      .catch(function (e) { busy(btn, false); toast('Export failed: ' + e.message, 'err'); });
+  }
+
+  /* ========================================================
+     TABS & BOOT
+     ======================================================== */
+
+  var loaded = {};
+  function tab(t) {
+    document.querySelectorAll('.tab').forEach(function (x) { x.classList.toggle('active', x.dataset.tab === t); });
+    document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+    $('panel-' + t).classList.add('active');
+    if (t === 'dash')  { loadStock(); if (!loaded.trend) { loaded.trend = 1; loadTrend(); } }
+    if (t === 'daily') { if (!loaded.daily) { loaded.daily = 1; quickRange(7); } else loadDaily(); }
+    if (t === 'items') renderItems();
+    if (t === 'return' && !document.querySelectorAll('#retRows .erow').length) addRetRow(2);
+  }
+
+  function refreshAll() {
+    boot(true);
+    var active = document.querySelector('.tab.active');
+    if (active) tab(active.dataset.tab);
+    toast('Refreshed', 'info');
+  }
+
+  function boot(silent) {
+    if (!configured()) {
+      $('setupBanner').classList.add('show');
+      conn('off', 'Not configured');
+      return;
+    }
+    if (!silent) conn('', 'Connecting…');
+    api('bootstrap').then(function (d) {
+      S.items = d.items || [];
+      S.itemMap = {};
+      S.items.forEach(function (i) { S.itemMap[i.name.toLowerCase()] = i.name; });
+      S.orderSrc = d.orderSrc || [];
+      S.statusCats = d.statusCats || [];
+      $('orderSource').innerHTML = S.orderSrc.map(function (o) { return '<option>' + esc(o) + '</option>'; }).join('');
+      conn('on', 'Connected · ' + S.items.length + ' items');
+      onTypeChange();
+      loadStock(true);
+    }).catch(function (e) {
+      conn('off', 'Offline');
+      toast('Connection failed: ' + e.message, 'err');
+      $('setupBanner').classList.add('show');
+    });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && $('overlay').classList.contains('open')) closeModal();
+  });
+
+  window.addEventListener('DOMContentLoaded', function () {
+    addRow(3);
+    addRetRow(2);
+    $('toD').value = todayStr();
+    $('fromD').value = todayStr(-6);
+    boot();
+  });
+
+  /* ---------- public API ---------- */
+  return {
+    tab: tab, refreshAll: refreshAll,
+    onTypeChange: onTypeChange, addRow: addRow, removeRow: removeRow,
+    countRows: countRows, resetEntry: resetEntry, saveEntries: saveEntries,
+    loadStock: loadStock, renderStock: renderStock, loadTrend: loadTrend,
+    loadDaily: loadDaily, quickRange: quickRange,
+    openDay: openDay, modalTab: modalTab, closeModal: closeModal,
+    addRetRow: addRetRow, removeRetRow: removeRetRow, countRetRows: countRetRows, saveReturns: saveReturns,
+    addSku: addSku, renderItems: renderItems,
+    exportStock: exportStock, exportTxns: exportTxns
+  };
+})();
+
+</script>
+</body>
+</html>
